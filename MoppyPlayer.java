@@ -44,7 +44,7 @@ public class MoppyPlayer implements Receiver {
     SerialPort com;
 
     public MoppyPlayer(MoppyBridge newMb) {
-        mb = newMb;
+//        mb = newMb;
     }
 
     public void close() {
@@ -59,7 +59,7 @@ public class MoppyPlayer implements Receiver {
             byte pin = (byte) (2 * (message.getStatus() - 127));
 
             System.out.println("Got note OFF on pin: " + (pin & 0xFF));
-            mb.sendEvent(pin, 0);
+//            mb.sendEvent(pin, 0);
             currentPeriod[message.getStatus() - 128] = 0;
         } else if (message.getStatus() > 143 && message.getStatus() < 160) { // Note ON
             //Convert the MIDI channel being used to the controller pin on the
@@ -81,10 +81,10 @@ public class MoppyPlayer implements Receiver {
 
             //Zero velocity events turn off the pin.
             if (message.getMessage()[2] == 0) {
-                mb.sendEvent(pin, 0);
+//                mb.sendEvent(pin, 0);
                 currentPeriod[message.getStatus() - 144] = 0;
             } else {
-                mb.sendEvent(pin, period);
+//                mb.sendEvent(pin, period);
                 currentPeriod[message.getStatus() - 144] = period;
             }
         } else if (message.getStatus() > 223 && message.getStatus() < 240) { //Pitch bends
@@ -98,7 +98,7 @@ public class MoppyPlayer implements Receiver {
 
                 int period = (int) (currentPeriod[message.getStatus() - 224] / Math.pow(2.0, (pitchBend - 8192) / 8192));
                 System.out.println(currentPeriod[message.getStatus() - 224] + "-" + period);
-                mb.sendEvent(pin, period);
+//                mb.sendEvent(pin, period);
             }
         }
 
