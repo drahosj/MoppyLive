@@ -43,7 +43,7 @@ public class MoppyPlayer implements Receiver {
     MoppyBridge mb;
     SerialPort com;
 
-    public MoppyPlayer(MoppyBridge newMb) {
+    public MoppyPlayer() {
 //        mb = newMb;
     }
 

@@ -24,16 +24,16 @@ import javax.sound.midi.Sequencer;
  */
 public class MoppySequencer implements MetaEventListener{
 
-    MoppyBridge mb;
+//    MoppyBridge mb;
     MoppyPlayer mp;
     Sequencer sequencer;
     ArrayList<MoppyStatusConsumer> listeners = new ArrayList<MoppyStatusConsumer>(1);
 
     public MoppySequencer(String comPort) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException, MidiUnavailableException {
-    	mb = new MoppyBridge(comPort); //Create MoppyBridge on the COM port with the Arduino
-        mp = new MoppyPlayer(mb);
+//    	mb = new MoppyBridge(comPort); //Create MoppyBridge on the COM port with the Arduino
+        mp = new MoppyPlayer();
 
-        mb.resetDrives();
+//        mb.resetDrives();
 
         sequencer = MidiSystem.getSequencer(false);
         sequencer.open();
@@ -58,7 +58,7 @@ public class MoppySequencer implements MetaEventListener{
         if (sequencer.isOpen()){
                 sequencer.stop();
             }
-        mb.resetDrives();
+//        mb.resetDrives();
     }
     
     public void setTempo(float newTempo){
