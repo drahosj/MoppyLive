@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 
 /**
  *
@@ -26,7 +28,7 @@ public class MoppySequencer implements MetaEventListener{
 
 //    MoppyBridge mb;
     MoppyPlayer mp;
-    Sequencer sequencer;
+    MidiDevice inputDevice = null;
     ArrayList<MoppyStatusConsumer> listeners = new ArrayList<MoppyStatusConsumer>(1);
 
     public MoppySequencer(String comPort) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException, MidiUnavailableException {
@@ -34,50 +36,67 @@ public class MoppySequencer implements MetaEventListener{
         mp = new MoppyPlayer();
 
 //        mb.resetDrives();
-
-        sequencer = MidiSystem.getSequencer(false);
-        sequencer.open();
-        sequencer.getTransmitter().setReceiver(mp); // Set MoppyPlayer as a receiver.
-        sequencer.addMetaEventListener(this);
-    }
-
-    public void loadFile(String filePath) throws InvalidMidiDataException, IOException, MidiUnavailableException {
-
-        sequencer.stop();
-        Sequence sequence = MidiSystem.getSequence(new File(filePath));
         
-        sequencer.setSequence(sequence);
-        System.out.println("Loaded sequence with "+(sequence.getTracks().length-1)+" MIDI channels.");
+        MidiDevice.Info info[] = MidiSystem.getMidiDeviceInfo();
+        
+        for (int i = 0; i < info.length; i++){
+        	if (MidiSystem.getMidiDevice(info[i]) instanceof Sequencer)
+        		System.out.println("Device " + i + " is a sequencer");
+        	System.out.println("Midi device " + i + " has name " + info[i].getName());
+//        	if (info[i].getName() == "CA0106"){
+//        		inputDevice = MidiSystem.getMidiDevice(info[i]);
+//        		System.out.println("Input device set");
+//        	}
+        }
+        
+        inputDevice = MidiSystem.getMidiDevice(info[2]);
+        inputDevice.open();
+        inputDevice.getTransmitter().setReceiver(mp);
+        
+
+//        sequencer = MidiSystem.getSequencer(false);
+//        sequencer.open();
+//        sequencer.getTransmitter().setReceiver(mp); // Set MoppyPlayer as a receiver.
+//        sequencer.addMetaEventListener(this);
     }
+
+//    public void loadFile(String filePath) throws InvalidMidiDataException, IOException, MidiUnavailableException {
+//
+//        sequencer.stop();
+//        Sequence sequence = MidiSystem.getSequence(new File(filePath));
+//        
+//        sequencer.setSequence(sequence);
+//        System.out.println("Loaded sequence with "+(sequence.getTracks().length-1)+" MIDI channels.");
+//    }
     
-    public void startSequencer(){
-        sequencer.start();
-    }
-    
-    public void stopSequencer(){
-        if (sequencer.isOpen()){
-                sequencer.stop();
-            }
-//        mb.resetDrives();
-    }
-    
-    public void setTempo(float newTempo){
-        sequencer.setTempoInBPM(newTempo);
-    }
-    
-    public void addListener(MoppyStatusConsumer newListener){
-        listeners.add(newListener);
-    }
-    
-    public void removeListener(MoppyStatusConsumer oldListener){
-        listeners.remove(oldListener);
-    }
-    
-    public void closeSequencer(){
-        stopSequencer();
-        sequencer.close();
-        mp.close();
-    }
+//    public void startSequencer(){
+//        sequencer.start();
+//    }
+//    
+//    public void stopSequencer(){
+//        if (sequencer.isOpen()){
+//                sequencer.stop();
+//            }
+////        mb.resetDrives();
+//    }
+//    
+//    public void setTempo(float newTempo){
+//        sequencer.setTempoInBPM(newTempo);
+//    }
+//    
+//    public void addListener(MoppyStatusConsumer newListener){
+//        listeners.add(newListener);
+//    }
+//    
+//    public void removeListener(MoppyStatusConsumer oldListener){
+//        listeners.remove(oldListener);
+//    }
+//    
+//    public void closeSequencer(){
+//        stopSequencer();
+//        sequencer.close();
+//        mp.close();
+//    }
 
     public void meta(MetaMessage meta) {
         if (meta.getType() == 81){
@@ -90,7 +109,7 @@ public class MoppySequencer implements MetaEventListener{
             
             int newTempo = 60000000/uSecondsPerQN;
             
-            sequencer.setTempoInBPM(newTempo);
+//            sequencer.setTempoInBPM(newTempo);
             for (MoppyStatusConsumer c : listeners){
                 c.tempoChanged(newTempo);
             }

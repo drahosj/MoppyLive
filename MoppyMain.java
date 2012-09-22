@@ -11,16 +11,14 @@ import javax.sound.midi.MidiUnavailableException;
 
 public class MoppyMain {
 	public static void main(String [] args) {
-		if (args.length != 2) {
-			System.out.println("moppylive [port] [filename]");
-			return;
-		}
+//		if (args.length != 1) {
+//			System.out.println("moppylive [port]");
+//			return;
+//		}
 		try {
 			MoppySequencer sequencer = new MoppySequencer(args[0]);
-			
-			sequencer.loadFile(args[1]);
-			
-			sequencer.startSequencer();
+			System.in.read();
+			sequencer.inputDevice.close();
 		} catch (NoSuchPortException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -34,9 +32,6 @@ public class MoppyMain {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MidiUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidMidiDataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
